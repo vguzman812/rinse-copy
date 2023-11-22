@@ -81,9 +81,8 @@ The primary objectives of the project include:
 2. Install dependencies for the front-end and back-end:
 
    ```bash
-   cd rinse
-   cd client && npm install
-   cd ../server && npm install
+   cd rinse && npm install
+   cd frontend && npm install
    ```
 
 3. Configure Environment Variables:
@@ -95,8 +94,8 @@ The primary objectives of the project include:
 
 4. Run the Application:
 
-   - To start the front-end, run: `cd client && npm run dev`
-   - To start the back-end, run: `cd server && nodemon index.js`
+   - To start the back-end, run: `npm run server`
+   - To start the front-end, run: `cd frontend && npm run dev`
      <br/>
      <br/>
 
