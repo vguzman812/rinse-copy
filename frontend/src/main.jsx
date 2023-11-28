@@ -1,53 +1,66 @@
 // External Libraries
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-  RouterProvider,
-} from 'react-router-dom'
-import { Provider } from 'react-redux'
-import { HelmetProvider } from 'react-helmet-async'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Internal Modules/Pages
-import store from './store.js'
-import App from './App.jsx'
-import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import ContactPage from './pages/ContactPage'
-import RegisterPage from './pages/RegisterPage'
-import MapPage from './pages/MapPage'
-import ProviderPage from './pages/ProviderPage.jsx'
+import store from './store.js';
+import RootLayout from './layouts/RootLayout.jsx';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import ContactPage from './pages/ContactPage';
+import RegisterPage from './pages/RegisterPage';
+import MapPage from './pages/MapPage';
+import ProviderPage from './pages/ProviderPage.jsx';
+import ErrorPage from './pages/ErrorPage.jsx';
+import DashboardLayout from './layouts/dashboard/DashboardLayout.jsx';
 
 // Route Modifiers
 // import AdminRoute from "./components/AdminRoute.tsx";
 // import PrivateRoute from "./components/PrivateRoute.tsx";
 
 // Create the router with all the routes
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path='/' element={<App />}>
-      {/* Public Routes */}
-      <Route index={true} path='/' element={<HomePage />} />
-      {/* The below two routes will be for searching and displaying service providers */}
-      {/* <Route
-        path="/search/:keyword"
-        element={<HomeScreen />}
-      />
-      <Route
-        path="/search/:keyword/page/:pageNumber"
-        element={<HomeScreen />}
-      /> */}
-      <Route path='/login' element={<LoginPage />} />
-      <Route path='/contact' element={<ContactPage />} />
-      <Route path='/register' element={<RegisterPage />} />
-      <Route path='/map' element={<MapPage />} />
-      <Route path='/provider/:name' element={<ProviderPage />} />
-    </Route>
-  )
-)
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: '/',
+        element: <HomePage />,
+      },
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/contact',
+        element: <ContactPage />,
+      },
+      {
+        path: '/register',
+        element: <RegisterPage />,
+      },
+      {
+        path: '/map',
+        element: <MapPage />,
+      },
+      {
+        path: '/provider/:name',
+        element: <ProviderPage />,
+      },
+    ],
+  },
+  {
+    path: '/dashboard/*',
+    element: <DashboardLayout />,
+    errorElement: <ErrorPage />,
+  },
+]);
 
 // Render the React app
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -61,4 +74,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </Provider>
     </HelmetProvider>
   </React.StrictMode>
-)
+);
