@@ -6,9 +6,10 @@ import ServiceSearchMap from '../components/ServiceSearchMap';
 import ServiceList from '../components/ServiceList';
 import { useSelector } from 'react-redux';
 
+const libraries = ['places'];
+
 const MapPage = () => {
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const libraries = ['places'];
   const { isLoaded } = useLoadScript({
     googleMapsApiKey,
     libraries,
@@ -17,20 +18,21 @@ const MapPage = () => {
   const latitude = useSelector((state) => state.nav.origin.location.latitude);
 
   return (
-    <div className="flex flex-col-reverse justify-center lg:flex-row w-full">
+    <div className='flex flex-col-reverse justify-between lg:flex-row w-full absolute px-10 py-3'>
       {/* Search for Services */}
 
-      <div className="">
+      <div className=''>
         <ServiceSearchMap />
       </div>
 
       {/* Render the Service List */}
-      {latitude !== 0 && <ServiceList className="" />}
+      {latitude !== 0 && <ServiceList className='' />}
 
       {/* Render Map Component */}
       {isLoaded && (
         <div>
-          <div className="grid grow h-[75vh] lg:w-[500px]">
+          <div className='grid grow h-[650px] lg:w-[420px] left-[960px] rounded-md'>
+          {/* <div className='grid top-[83px] left-[960px] w-[422px] h-[641px] rounded-md'> */}
             <Map />
           </div>
         </div>

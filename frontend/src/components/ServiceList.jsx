@@ -7,7 +7,7 @@ const ServiceList = () => {
 
   async function fetchData() {
     try {
-      const response = await fetch('http://localhost:5100/api/users');
+      const response = await fetch('/api/users');
       const data = await response.json();
 
       // Corrected the variable name here
@@ -15,7 +15,7 @@ const ServiceList = () => {
         return current.role === 'provider';
       });
 
-      setUsers(filteredUsers); // Moved this line outside of the filter function
+      setUsers(filteredUsers);
     } catch (err) {
       console.log('Error fetching data:', err);
     }
@@ -25,59 +25,59 @@ const ServiceList = () => {
     fetchData();
   }, []);
 
-  console.log(users);
-
   return (
-    <div className="services-list max-w-xl">
+    <div className='services-list w-full'>
       {/* --------- Vertical Carousel -------- */}
-      <div className="h-screen w-screen carousel carousel-vertical rounded-box overflow-y-auto">
+      <div className='h-screen w-full carousel carousel-vertical rounded-box overflow-y-auto px-4'>
         {/* --------Choose a Wash------- */}
-        <h1 className="text-3xl lg:text-4xl font-bold">Choose a Wash</h1>
+        <h1 className='text-lg text-center lg:text-3xl lg:text-left font-bold pb-4'>Choose a Wash</h1>
         {/* <div className="carousel-item h-full"> */}
 
+
         {/* -------Recommended--------- */}
-        <h2 className="text-2xl font-bold">Recommended</h2>
-        <div className="carousel rounded-box  carousel-item">
-          {users.map((user) => (
+        <h2 className='text-xl font-bold'>Recommended</h2>
+        <div className='rounded-md flex-row py-1'>
+          {/* {users.map((user) => (
             <Card
-              key={user.id}
-              id={user.id}
-              name={user.name}
-              profileImage={user.services[0].photo || '/image/'}
-              altText={user.altText}
-              services={user.services[0]}
-              reviews={user.reviews}
-              serviceArea={user.serviceArea}
+              key={user.services[0]._id}
+              servicerName={user.name}
+              service={user.services[0]}
+              numReviews={user.reviews.length}
             />
-          ))}
+          ))} */}
+          <Card />
+          <Card />
+          <Card />
         </div>
         {/* --------- Best Deals --------- */}
-        <h2 className="text-2xl font-bold">Best Deals</h2>
-        <div className="carousel rounded-box carousel-item">
-          {users.map((user) => (
+        <h2 className='text-xl font-bold'>Best Deals</h2>
+        <div className='rounded-md flex-row'>
+          {/* {users.map((user) => (
             <Card
-              key={user.id}
-              profileImage={user.profileImage}
-              // altText={user.altText}
-              services={user.services[0]}
-              reviews={user.reviews}
-              serviceArea={user.serviceArea}
+              key={user.services[0]._id}
+              servicerName={user.name}
+              service={user.services[0]}
+              numReviews={user.reviews.length}
             />
-          ))}
+          ))} */}
+          <Card />
+          <Card />
+          <Card />
         </div>
         {/* -------- Quickest ---------- */}
-        <h2 className="text-2xl font-bold">Quickest Service</h2>
-        <div className="carousel rounded-box  carousel-item">
-          {users.map((user) => (
+        <h2 className='text-xl font-bold'>Quickest Service</h2>
+        <div className='rounded-md flex-row'>
+          {/* {users.map((user) => (
             <Card
-              key={user.id}
-              profileImage={user.profileImage}
-              altText={user.altText}
-              services={user.services[0]}
-              reviews={user.reviews}
-              serviceArea={user.serviceArea}
+              key={user.services[0]._id}
+              servicerName={user.name}
+              service={user.services[0]}
+              numReviews={user.reviews.length}
             />
-          ))}
+          ))} */}
+          <Card />
+          <Card />
+          <Card />
         </div>
       </div>
     </div>

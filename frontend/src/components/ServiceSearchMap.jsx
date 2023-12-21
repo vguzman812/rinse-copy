@@ -2,9 +2,10 @@ import React from 'react';
 import AutoComplete from './AutoComplete';
 import { useLoadScript } from '@react-google-maps/api';
 
+const libraries = ['places'];
+
 const ServiceSearchMap = () => {
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const libraries = ['places'];
   const { isLoaded } = useLoadScript({
     googleMapsApiKey,
     libraries,
@@ -15,16 +16,20 @@ const ServiceSearchMap = () => {
     //   <h2 className='text-3xl font-bold'>Get Rinsed</h2>
     //   <AutoComplete />
     // </div>
-    <div className="hero bg-base-300">
-      <div className="flex justify-center gap-4 flex-col lg:flex-row-reverse w-full xl:items-center ">
+    <div className='hero bg-base-300  w-80 rounded-xl shadow-xs border-slate-800'>
+      <div className='flex justify-center gap-4 flex-col lg:flex-row-reverse w-full xl:items-center '>
         {isLoaded && (
-          <div className="card w-full max-w-sm shadow-2xl bg-base-100">
-            <form className="card-body max-w-screen">
-              <div className="form-control">
-                <label className="label">
-                  <span className="text-2xl font-bold">Get Rinsed</span>
+          <div className='card w-full max-w-sm shadow-2xl bg-base-100'>
+            <form className='card-body max-w-screen'>
+              <div className='form-control'>
+                <label className='label'>
+                  <span className='text-lg'>Get Rinsed</span>
                 </label>
-                <AutoComplete />
+                <div className='flex-row items-stretch justify-around'>
+                  <AutoComplete className='mb-4' />
+                  <AutoComplete />
+                  <AutoComplete />
+                </div>
               </div>
               {/* <div className='form-control'>
               <AutoComplete />
@@ -32,8 +37,8 @@ const ServiceSearchMap = () => {
             <div className='form-control'>
               <AutoComplete />
             </div> */}
-              <div className="form-control mt-6">
-                <button className="btn btn-primary">schedule now</button>
+              <div className='form-control mt-6'>
+                <button className='btn btn-primary'>schedule now</button>
               </div>
             </form>
           </div>
