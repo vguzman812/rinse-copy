@@ -1,38 +1,49 @@
-import { model, Schema } from 'mongoose';
-import { omit } from 'ramda';
+import mongoose from 'mongoose';
+const { Schema, model } = mongoose;
 import bcrypt from 'bcryptjs';
-import dayjs from 'dayjs';
 import mongooseUniqueValidator from 'mongoose-unique-validator';
 
-// ! Change schema for additional location fields
+// Define a Point schema for GeoJSON format
+const PointSchema = new Schema(
+  {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
+    },
+    coordinates: {
+      type: [Number], // format will be [longitude, latitude]
+      required: true,
+    },
+  },
+  {
+    _id: false, // Disable _id for subdocument
+  }
+);
+
 const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: false,
+      required: [true, 'Name is required'],
       minlength: 2,
       maxlength: 50,
-      unique: false,
     },
     googleId: {
       type: String,
-      required: false,
       unique: true,
       sparse: true,
     },
     email: {
       type: String,
-      required: false,
+      required: [true, 'Email is required'],
       minlength: 5,
       maxlength: 255,
       unique: true,
     },
     password: {
       type: String,
-      required: false,
     },
-    passwordResetToken: { type: String, default: '' },
-    passwordResetExpires: { type: Date, default: dayjs().toDate() },
     isVerified: {
       type: Boolean,
       required: true,
@@ -40,7 +51,6 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      default: 'user',
       required: true,
       enum: ['admin', 'user', 'provider'],
     },
@@ -48,32 +58,20 @@ const userSchema = new Schema(
       type: String,
       default: '',
     },
+    numRatings: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     rating: {
       type: Number,
-      required: false,
+      required: true,
+      default: 0,
     },
-    services: [
-      {
-        name: { type: String, required: true, default: '' },
-        description: { type: String, required: true, default: '' },
-        price: { type: Number, required: true, default: 0 },
-        estimatedTime: { type: Number, required: true, default: 0 },
-        rating: { type: Number, required: true, default: 0 },
-        photo: { type: String, required: false, default: '' },
-      },
-    ],
-    reviews: [
-      {
-        name: { type: String, required: false },
-        avatar: { type: String, default: '/images/icons/default-avatar.jpg' },
-        rating: { type: Number, required: false },
-        comment: { type: String, required: false },
-      },
-    ],
-    // ! added locations for testing sample user locations
-    locations: {
-      latitude: { type: String, required: false },
-      longitude: { type: String, required: false },
+    location: {
+      type: PointSchema,
+      required: false,
+      index: '2dsphere', // Enables geospatial queries
     },
   },
   {
@@ -81,35 +79,47 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.methods.comparePassword = async function comparePassword(password) {
-  return bcrypt.compareSync(password, this.password);
-};
-
-userSchema.methods.hashPassword = function hashPassword() {
-  return new Promise((resolve, reject) => {
-    bcrypt.genSalt(10, (err1, salt) => {
-      if (err1) {
-        reject(err1);
-        return;
-      }
-      bcrypt.hash(this.password, salt, (err2, hash) => {
-        if (err2) {
-          reject(err2);
-          return;
-        }
-        this.password = hash;
-        resolve(hash);
-      });
-    });
-  });
-};
-
-userSchema.methods.hidePassword = function hidePassword() {
-  return omit(['password', '__v'], this.toObject({ virtuals: true }));
-};
-
 userSchema.plugin(mongooseUniqueValidator);
 
-export const User = model('User', userSchema);
+userSchema.pre('save', async function hashPassword(next) {
+  if (!this.isModified('password')) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
-export default User;
+/**
+ * Updates the rating of the user based on a new rating input.
+ *
+ * @param {number} newRating - The new rating to be added.
+ * @return {Promise} A promise that resolves to the updated user object after saving.
+ */
+userSchema.methods.updateRating = function updateRating(newRating) {
+  const cumulativeRatingScore = numRatings * rating + newRating;
+  this.numRatings += 1;
+  this.rating = cumulativeRatingScore / this.numRatings;
+  return this.save();
+};
+
+/**
+ * Compares the provided password with the stored password for the user.
+ *
+ * @param {string} candidatePassword - The password to compare with the stored password
+ * @return {Promise<boolean>} A Promise that resolves to a boolean indicating whether the passwords match
+ */
+userSchema.methods.comparePassword = async function comparePassword(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
+/**
+ * Hides sensitive information from the user object, such as the password.
+ *
+ * @return {Object} The user object without the password field.
+ */
+userSchema.methods.hidePassword = function hidePassword() {
+  const user = this.toObject();
+  delete user.password;
+  return user;
+};
+
+export const User = model('User', userSchema);
